@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_database" default="compile.module.database">
+  <dirname property="module.database.basedir" file="${ant.file.module_database}"/>
+  
+  <property name="module.jdk.home.database" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.database" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.database" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.database" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="database.output.dir" value="${module.database.basedir}/out/production/DataBase"/>
+  <property name="database.testoutput.dir" value="${module.database.basedir}/out/test/DataBase"/>
+  
+  <path id="database.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="database.module.production.classpath">
+    <path refid="${module.jdk.classpath.database}"/>
+    <path refid="library.postgresql-42.1.4.classpath"/>
+  </path>
+  
+  <path id="database.runtime.production.module.classpath">
+    <pathelement location="${database.output.dir}"/>
+    <path refid="library.postgresql-42.1.4.classpath"/>
+  </path>
+  
+  <path id="database.module.classpath">
+    <path refid="${module.jdk.classpath.database}"/>
+    <pathelement location="${database.output.dir}"/>
+    <path refid="library.postgresql-42.1.4.classpath"/>
+  </path>
+  
+  <path id="database.runtime.module.classpath">
+    <pathelement location="${database.testoutput.dir}"/>
+    <pathelement location="${database.output.dir}"/>
+    <path refid="library.postgresql-42.1.4.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.database">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.database">
+    <patternset refid="excluded.from.module.database"/>
+  </patternset>
+  
+  <path id="database.module.sourcepath">
+    <dirset dir="${module.database.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.database" depends="compile.module.database.production,compile.module.database.tests" description="Compile module DataBase"/>
+  
+  <target name="compile.module.database.production" depends="register.custom.compilers" description="Compile module DataBase; production classes">
+    <mkdir dir="${database.output.dir}"/>
+    <javac2 destdir="${database.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.database}/javac">
+      <compilerarg line="${compiler.args.database}"/>
+      <bootclasspath refid="database.module.bootclasspath"/>
+      <classpath refid="database.module.production.classpath"/>
+      <src refid="database.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.database"/>
+    </javac2>
+    
+    <copy todir="${database.output.dir}">
+      <fileset dir="${module.database.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.database.tests" depends="register.custom.compilers,compile.module.database.production" description="compile module DataBase; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.database" description="cleanup module">
+    <delete dir="${database.output.dir}"/>
+    <delete dir="${database.testoutput.dir}"/>
+  </target>
+</project>
