@@ -78,8 +78,6 @@ public class Win_Set extends JFrame {
     public void connect() {
         user = input_user.getText();
         pass = input_pass.getText();
-        //user = "postgres";
-        //pass = "avuzero4";
         System.out.println(user + " " + pass);
         connecting = Connect.connect(url, user, pass);
         if (connecting != null) {
